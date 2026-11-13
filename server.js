@@ -14,24 +14,51 @@ const razorpay = new Razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-// टेस्ट रूट (सर्व्हर लाईव्ह आहे का हे तपासण्यासाठी)
+// **सर्व पुस्तकांची माहिती (Database ऐवजी ऑब्जेक्ट वापरून)**
+const booksDatabase = {
+    "book-1": {
+        title: "Advanced Data Analytics Guide",
+        amount: 49900, // ४९९ रुपये (पैशांमध्ये)
+        driveLink: "https://drive.google.com/uc?export=download&id=YOUR_DRIVE_FILE_ID_1"
+    },
+    "book-2": {
+        title: "Python & SQL Masterclass",
+        amount: 29900, // २९९ रुपये
+        driveLink: "https://drive.google.com/uc?export=download&id=YOUR_DRIVE_FILE_ID_2"
+    },
+    "book-3": {
+        title: "Complete Excel & Power BI Handbook",
+        amount: 19900, // १९९ रुपये
+        driveLink: "https://drive.google.com/uc?export=download&id=YOUR_DRIVE_FILE_ID_3"
+    }
+};
+
+// टेस्ट रूट
 app.get('/', (req, res) => {
     res.send('PDF Store Backend is running successfully!');
 });
 
-// १. ऑर्डर तयार करण्यासाठी एपीआय (Create Order API)
+// १. ऑर्डर तयार करण्यासाठी एपीआय (Book ID नुसार)
 app.post('/api/create-order', async (req, res) => {
     try {
+        const { bookId } = req.body;
+        const book = booksDatabase[bookId];
+
+        if (!book) {
+            return res.status(404).json({ success: false, message: "Book not found!" });
+        }
+
         const options = {
-            amount: 49900, // ४९९ रुपये (पैशांमध्ये)
+            amount: book.amount, 
             currency: "INR",
-            receipt: "receipt_order_" + Date.now()
+            receipt: "receipt_" + bookId + "_" + Date.now()
         };
 
         const order = await razorpay.orders.create(options);
         res.json({
             success: true,
-            order
+            order,
+            bookTitle: book.title
         });
     } catch (error) {
         console.error(error);
@@ -39,31 +66,29 @@ app.post('/api/create-order', async (req, res) => {
     }
 });
 
-// २. पेमेंट व्हेरिफाय करण्यासाठी आणि ड्राईव्ह लिंक देण्यासाठी एपीआय (Verify Payment API)
+// २. पेमेंट व्हेरिफाय करण्यासाठी आणि योग्य ड्राईव्ह लिंक देण्यासाठी एपीआय
 app.post('/api/verify-payment', (req, res) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookId } = req.body;
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
-    // सिग्नेचर मॅच करणे (सुरक्षिततेसाठी अत्यंत महत्त्वाचे)
     const expectedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
         .update(body.toString())
         .digest('hex');
 
     if (expectedSignature === razorpay_signature) {
-        // पेमेंट यशस्वी! आता युजरला गुगल ड्राईव्हची सुरक्षित लिंक पाठवा
+        const book = booksDatabase[bookId];
         res.json({
             success: true,
             message: "Payment verified successfully!",
-            driveLink: "https://drive.google.com/uc?export=download&id=YOUR_GOOGLE_DRIVE_FILE_ID" 
+            driveLink: book ? book.driveLink : "#" 
         });
     } else {
         res.status(400).json({ success: false, message: "Invalid signature, payment verification failed!" });
     }
 });
 
-// Render साठी अचूक पोर्ट सेटअप (महत्त्वाचे)
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
