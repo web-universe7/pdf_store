@@ -65,7 +65,7 @@
 
     <!-- JavaScript for Payment Flow -->
     <script>
-        const BACKEND_URL = "https://pdf-book-backend.onrender.com"; // तुमची Render युनायटेड URL येथे टाका
+        const BACKEND_URL = "https://pdf-store-jlwh.onrender.com"; // तुमची Render युनायटेड URL येथे टाका
 
         async function buyBook(bookId) {
             try {
@@ -84,7 +84,7 @@
 
                 // २. Razorpay चेकआउट विंडो ओपन करणे
                 var options = {
-                    "key": "YOUR_RAZORPAY_KEY_ID", // तुमची Razorpay Key ID
+                    "key": "rzp_test_TwR8MASx8DbNw0", // तुमची Razorpay Key ID
                     "amount": data.order.amount,
                     "currency": "INR",
                     "name": "PDF Book Store",
