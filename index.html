@@ -3,98 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy PDF Book - Secure Checkout</title>
-    <!-- Tailwind CSS CDN for styling -->
+    <title>PDF Book Store - Multiple Books</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Razorpay Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 min-h-screen p-6">
 
-    <div class="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full text-center">
-        <!-- Book Cover Image -->
-        <img src="https://via.placeholder.com/200x280" alt="PDF Book Cover" class="mx-auto rounded-lg shadow-md mb-4 object-cover w-48 h-64">
-        
-        <!-- Book Title -->
-        <h2 class="text-xl font-bold text-gray-800 mb-2">तुमचे ई-बुकचे नाव (PDF Book)</h2>
-        
-        <!-- Book Description -->
-        <p class="text-gray-600 text-sm mb-4">हे पुस्तक वाचून तुमची स्किल्स सुधारा. संपूर्ण ऍडव्हान्स माहिती सह.</p>
-        
-        <!-- Price -->
-        <div class="text-2xl font-extrabold text-green-600 mb-6">₹499 <span class="text-xs text-gray-400 line-through">₹999</span></div>
-        
-        <!-- Buy Now Button -->
-        <button id="rzp-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg cursor-pointer">
-            Buy Now (₹499)
-        </button>
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">आमची डिजिटल पुस्तके (E-Books)</h1>
+
+    <!-- Books Container -->
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Book 1 -->
+        <div class="bg-white p-5 rounded-2xl shadow-xl text-center flex flex-col justify-between">
+            <div>
+                <img src="https://via.placeholder.com/200x250" alt="Book 1" class="mx-auto rounded-lg mb-4 object-cover w-full h-48">
+                <h2 class="text-lg font-bold text-gray-800 mb-2">Advanced Data Analytics Guide</h2>
+                <p class="text-gray-600 text-sm mb-4">डेटा अनालिटिक्स शिकण्यासाठी संपूर्ण मार्गदर्शक.</p>
+            </div>
+            <div>
+                <div class="text-xl font-extrabold text-green-600 mb-4">₹499</div>
+                <button onclick="buyBook('book-1')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl transition duration-300 shadow-md">
+                    Buy Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Book 2 -->
+        <div class="bg-white p-5 rounded-2xl shadow-xl text-center flex flex-col justify-between">
+            <div>
+                <img src="https://via.placeholder.com/200x250" alt="Book 2" class="mx-auto rounded-lg mb-4 object-cover w-full h-48">
+                <h2 class="text-lg font-bold text-gray-800 mb-2">Python & SQL Masterclass</h2>
+                <p class="text-gray-600 text-sm mb-4">पायथन आणि एसक्यूएल बेसिक ते अडव्हान्स.</p>
+            </div>
+            <div>
+                <div class="text-xl font-extrabold text-green-600 mb-4">₹299</div>
+                <button onclick="buyBook('book-2')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl transition duration-300 shadow-md">
+                    Buy Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Book 3 -->
+        <div class="bg-white p-5 rounded-2xl shadow-xl text-center flex flex-col justify-between">
+            <div>
+                <img src="https://via.placeholder.com/200x250" alt="Book 3" class="mx-auto rounded-lg mb-4 object-cover w-full h-48">
+                <h2 class="text-lg font-bold text-gray-800 mb-2">Complete Excel & Power BI</h2>
+                <p class="text-gray-600 text-sm mb-4">डेटा विजुअलायझेशन आणि एक्सेल रिपोर्ट्स.</p>
+            </div>
+            <div>
+                <div class="text-xl font-extrabold text-green-600 mb-4">₹199</div>
+                <button onclick="buyBook('book-3')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl transition duration-300 shadow-md">
+                    Buy Now
+                </button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- JavaScript for Backend Connection & Razorpay -->
+    <!-- JavaScript for Payment Flow -->
     <script>
-        // तुमच्या Render बॅकएंडची युनिक URL येथे टाका (शेवटचा स्लॅश नसावा)
-        const BACKEND_URL = "https://pdf-store-jlwh.onrender.com"; 
+        const BACKEND_URL = "https://pdf-book-backend.onrender.com"; // तुमची Render युनायटेड URL येथे टाका
 
-        document.getElementById('rzp-button').onclick = async function(e) {
-            e.preventDefault();
-            
-            const button = document.getElementById('rzp-button');
-            button.innerText = "Processing...";
-            button.disabled = true;
-
+        async function buyBook(bookId) {
             try {
-                // १. बॅकएंडकडून ऑर्डर तयार करून घेणे
+                // १. बॅकएंडकडून विशिष्ट पुस्तकाची ऑर्डर तयार करून घेणे
                 const response = await fetch(`${BACKEND_URL}/api/create-order`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bookId: bookId })
                 });
                 const data = await response.json();
 
                 if (!data.success) {
-                    alert("ऑर्डर तयार करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा.");
-                    button.innerText = "Buy Now (₹499)";
-                    button.disabled = false;
+                    alert("ऑर्डर तयार करण्यात अडचण आली.");
                     return;
                 }
 
                 // २. Razorpay चेकआउट विंडो ओपन करणे
                 var options = {
-                    "key": "rzp_test_TwR8MASx8DbNw0", // तुमची Razorpay Key ID येथे टाका (Test किंवा Live)
+                    "key": "YOUR_RAZORPAY_KEY_ID", // तुमची Razorpay Key ID
                     "amount": data.order.amount,
                     "currency": "INR",
                     "name": "PDF Book Store",
-                    "description": "E-Book Purchase",
-                    "order_id": data.order.id, // बॅकएंडवरून आलेला order_id
+                    "description": data.bookTitle,
+                    "order_id": data.order.id,
                     "handler": async function (response) {
-                        // ३. पेमेंट यशस्वी झाल्यावर बॅकएंडकडे व्हेरिफाय करण्यासाठी पाठवणे
-                        button.innerText = "Verifying Payment...";
-                        
+                        // ३. पेमेंट झाल्यावर व्हेरिफाय करून योग्य ड्राईव्ह लिंक मागवणे
                         const verifyRes = await fetch(`${BACKEND_URL}/api/verify-payment`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature
+                                razorpay_signature: response.razorpay_signature,
+                                bookId: bookId
                             })
                         });
 
                         const verifyData = await verifyRes.json();
                         
                         if (verifyData.success) {
-                            alert("पेमेंट यशस्वी! तुम्हाला आता डाऊनलोड लिंक मिळत आहे.");
-                            // बॅकएंडवरून आलेली सुरक्षित गुगल ड्राईव्ह लिंक ओपन होईल
+                            alert("पेमेंट यशस्वी! तुम्हाला आता तुमच्या पुस्तकाची डाऊनलोड लिंक मिळत आहे.");
                             window.location.href = verifyData.driveLink; 
                         } else {
                             alert("पेमेंट व्हेरिफिकेशन्स फेल झाले!");
-                            button.innerText = "Buy Now (₹499)";
-                            button.disabled = false;
                         }
-                    },
-                    "prefill": {
-                        "name": "ग्रहाकाचे नाव",
-                        "email": "customer@example.com",
-                        "contact": "9876543210"
                     },
                     "theme": { 
                         "color": "#2563EB" 
@@ -102,22 +118,13 @@
                 };
 
                 var rzp1 = new Razorpay(options);
-                
-                rzp1.on('payment.failed', function (response){
-                    alert("पेमेंट अयशस्वी झाले: " + response.error.description);
-                    button.innerText = "Buy Now (₹499)";
-                    button.disabled = false;
-                });
-
                 rzp1.open();
 
             } catch (error) {
                 console.error("Error:", error);
                 alert("सर्व्हरशी कनेक्ट करण्यात अडचण येत आहे.");
-                button.innerText = "Buy Now (₹499)";
-                button.disabled = false;
             }
-        };
+        }
     </script>
 </body>
 </html>
