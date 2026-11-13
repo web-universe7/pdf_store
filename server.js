@@ -18,17 +18,17 @@ const razorpay = new Razorpay({
 const booksDatabase = {
     "book-1": {
         title: "Advanced Data Analytics Guide",
-        amount: 49900, // ४९९ रुपये (पैशांमध्ये)
-        driveLink: "https://drive.google.com/uc?export=download&id=YOUR_DRIVE_FILE_ID_1"
+        amount: 100, // ४९९ रुपये (पैशांमध्ये)
+        driveLink: "https://drive.google.com/file/d/1yUPVxnDZT6aJOOo9e4gCzHYunp81cdqf/view?usp=sharing"
     },
     "book-2": {
         title: "Python & SQL Masterclass",
-        amount: 29900, // २९९ रुपये
+        amount: 100, // २९९ रुपये
         driveLink: "https://drive.google.com/uc?export=download&id=YOUR_DRIVE_FILE_ID_2"
     },
     "book-3": {
         title: "Complete Excel & Power BI Handbook",
-        amount: 19900, // १९९ रुपये
+        amount: 100, // १९९ रुपये
         driveLink: "https://drive.google.com/uc?export=download&id=YOUR_DRIVE_FILE_ID_3"
     }
 };
